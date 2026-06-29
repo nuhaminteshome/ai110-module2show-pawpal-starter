@@ -1,0 +1,33 @@
+classDiagram
+    class PetOwner {
+        +String name_of_owner
+        +List pets
+        +add_name()
+        +add_pet()
+    }
+
+    class Pet {
+        +String name
+        +String pet_type
+        +update_pet_info()
+    }
+
+    class DailySchedule {
+        +String date
+        +String reasoning
+        +display_schedule()
+        +display_reasoning()
+    }
+
+    class Task {
+        +String type_of_task
+        +String priority_level
+        +int duration
+        +add_task()
+        +delete_task()
+        +edit_task()
+    }
+
+    PetOwner "1" --> "1..*" Pet : owns
+    PetOwner "1" --> "1" DailySchedule : has
+    DailySchedule "1" --> "0..*" Task : contains

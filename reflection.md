@@ -2,6 +2,28 @@
 
 ## 1. System Design
 
+Actions
+- A user should be able to enter information about pet owner and their pet.
+- A user should be able to add or edit tasks.
+- A user should be able to see the generated daily plan.
+
+Main objects
+1. PetOwner
+- Attributes: name_of_owner, pets
+- Methods: add_name(), add_pet()
+
+2. Pet
+- Attributes: name, pet_type
+- Methods: update_pet_info()
+
+3. DailySchedule
+- Attributes: date,
+- Methods: display_schedule()
+
+4. Task
+- Attributes: type_of_task, priority_level, duration
+- Methods: add_task(), delete_task(), edit_task()
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
