@@ -5,7 +5,7 @@
 Actions
 - A user should be able to enter information about pet owner and their pet.
 - A user should be able to add or edit tasks.
-- A user should be able to see the generated daily plan.
+- A user should be able to see the generated daily plan and its reasoning.
 
 Main objects
 1. PetOwner
@@ -17,8 +17,8 @@ Main objects
 - Methods: update_pet_info()
 
 3. DailySchedule
-- Attributes: date,
-- Methods: display_schedule()
+- Attributes: date, reasoning
+- Methods: display_schedule(), display_reasoning()
 
 4. Task
 - Attributes: type_of_task, priority_level, duration
@@ -29,10 +29,22 @@ Main objects
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+I chose 4 classes: PetOwner, Pet, Daily_Schedule and Task. Their responsibilities are:
+1. PetOwner: adds their name and their pet(s)
+2. Pet: stores the pet's name and type, and also allows updating that info
+3. DailySchedule: displays the schedule and its reasoning
+4. Task: stores the task details and adding, deleting and editing tasks is possible. 
+
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+Yes, it did.
+Here are some changes I made:
+1. Initially, I didn't link a task to a pet. Now, I added a pet_name attritube to the Task class.
+2. Although I had a DailySchedule class and had an attribute to display a schedule, I didn't have the attribute that lets the system generate the daily plan/schedule. Now I have the generate_schedule.
+3. I had inititally put the add_task and delete_task methods on the Task class, but I had to move it to the PetOwner since they're the ones doing this.
 
 ---
 
