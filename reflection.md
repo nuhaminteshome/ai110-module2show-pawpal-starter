@@ -60,6 +60,10 @@ Here are some changes I made:
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+My conflict checker only catches tasks that start at the exact same time (like two tasks both set to "09:00"). It does not check if tasks overlap when their durations are different. For example, a 30-minute walk starting at 07:00 actually runs until 07:30, so it really overlaps with a task starting at 07:15 — but my scheduler would not flag that as a conflict since the start times are not identical.
+
+I think this is a reasonable tradeoff for now because comparing exact times is much simpler to write and understand than comparing time ranges (which would need converting times to actual start/end minutes and checking if those ranges cross each other). Since most of the tasks in this app are short, simple daily pet-care tasks, exact-match conflicts already catch the most obvious scheduling mistakes. If I wanted to catch overlapping durations too, I would need to store a real end time (start time + duration) for each task and compare ranges instead of single points in time.
+
 ---
 
 ## 3. AI Collaboration

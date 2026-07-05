@@ -84,14 +84,12 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `DailySchedule.generate_schedule()`, `DailySchedule.sort_by_time()` | `generate_schedule()` sorts tasks by priority (high → medium → low). `sort_by_time()` re-sorts the same list by each task's preferred time, earliest first, pushing tasks with no time set to the end. |
+| Filtering | `PetOwner.filter_tasks(completed=None, pet_name=None)` | Returns tasks across all pets, optionally narrowed by completion status and/or by pet name. Both filters are optional and combine with AND logic. |
+| Conflict handling | `DailySchedule.find_conflicts()`, `DailySchedule.get_conflict_warnings()`, `DailySchedule.display_conflicts()` | `find_conflicts()` groups tasks by their time slot and flags any slot with more than one task. `get_conflict_warnings()` turns those groups into readable warning messages (labeling each as a "same pet" or "different pets" conflict) and never raises, even if scheduling data is malformed. `display_conflicts()` prints the warnings to the terminal. Note: conflicts are only detected on exact time matches, not overlapping durations — see `reflection.md` for that tradeoff. |
+| Recurring tasks | `Task.mark_complete()` | When a "daily" or "weekly" task is marked complete, this method automatically creates a new, pending `Task` instance for the next occurrence. The next due date is calculated with `datetime.timedelta` (+1 day for daily, +7 days for weekly) and the new task is added back to the same pet. |
 
 ## 📸 Demo Walkthrough
 
