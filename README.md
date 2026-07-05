@@ -68,18 +68,36 @@ Tasks ordered by priority for 2026-07-01:
 ```
 ## 🧪 Testing PawPal+
 
-```bash
-# Run the full test suite:
-pytest
+Run the full test suite from the project root:
 
-# Run with coverage:
-pytest --cov
+```bash
+python -m pytest
 ```
+
+Run with verbose output to see each test name:
+
+```bash
+python -m pytest -v
+```
+
+The suite (`tests/test_pawpal.py`) covers the core object model (`Task`, `Pet`, `PetOwner`) plus the three scheduling behaviors that matter most for correctness:
+
+- **Sorting correctness** — `generate_schedule()` orders tasks high → medium → low priority (with unrecognized priority values sorted last instead of erroring), and `sort_by_time()` re-sorts chronologically by preferred time, pushing tasks with no time set to the end.
+- **Recurrence logic** — completing a `"daily"` task creates a new pending task due the next day, completing a `"weekly"` task creates one due a week later, a missing `due_date` falls back to today, and tasks with an unrecognized frequency (or no owning pet) complete without creating a bad or duplicate successor.
+- **Conflict detection** — `find_conflicts()` flags tasks sharing the same time slot for both the same pet and different pets, ignores tasks with no time set, and `get_conflict_warnings()` labels each conflict as `[same pet]` or `[different pets]` without raising on malformed data.
 
 Sample test output:
 
 ```
-# Paste your pytest output here
+============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\nuham\Downloads\CodePath - AI110\ai110-module2show-pawpal-starter
+plugins: anyio-4.14.0
+collected 24 items
+
+tests\test_pawpal.py ........................                            [100%]
+
+============================= 24 passed in 0.06s ==============================
 ```
 
 ## 📐 Smarter Scheduling
