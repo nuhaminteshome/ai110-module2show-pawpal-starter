@@ -1,0 +1,53 @@
+classDiagram
+    class Task {
+        +String type_of_task
+        +String priority_level
+        +int duration
+        +String pet_name
+        +String time
+        +String frequency
+        +bool completed
+        +date due_date
+        -Pet _pet
+        +edit_task()
+        +mark_complete()
+    }
+
+    class Pet {
+        +String name
+        +String pet_type
+        +List~Task~ tasks
+        +add_task()
+        +delete_task()
+        +update_pet_info()
+    }
+
+    class PetOwner {
+        +String name_of_owner
+        +List~Pet~ pets
+        +add_name()
+        +add_pet()
+        +get_all_tasks()
+        +filter_tasks()
+    }
+
+    class DailySchedule {
+        +String date
+        +PetOwner owner
+        +String reasoning
+        +List~Task~ scheduled_tasks
+        +generate_schedule()
+        +sort_by_time()
+        +find_conflicts()
+        +get_conflict_warnings()
+        +display_conflicts()
+        +display_schedule()
+        +display_reasoning()
+    }
+
+    PetOwner "1" --> "1..*" Pet : owns
+    Pet "1" --> "0..*" Task : owns
+    DailySchedule "1" --> "1" PetOwner : schedules
+    DailySchedule "1" --> "0..*" Task : scheduled_tasks (sorted copy)
+    Task ..> Pet : _pet (back-reference)
+    Task ..> Task : mark_complete() spawns next occurrence

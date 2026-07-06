@@ -62,18 +62,36 @@ if st.button("Add Task"):
         st.success(f"Added '{task_title}' to {st.session_state.pet.name}.")
 
 if st.session_state.pet and st.session_state.pet.tasks:
-    st.write("Current tasks:")
-    st.table([
-        {
-            "Task": t.type_of_task,
-            "Pet": t.pet_name,
-            "Time": t.time,
-            "Duration (min)": t.duration,
-            "Priority": t.priority_level,
-            "Done": t.completed,
-        }
-        for t in st.session_state.pet.tasks
-    ])
+    status_filter = st.radio(
+        "Show", ["All", "Pending", "Completed"], horizontal=True
+    )
+    if status_filter == "Pending":
+        visible_tasks = st.session_state.owner.filter_tasks(
+            completed=False, pet_name=st.session_state.pet.name
+        )
+    elif status_filter == "Completed":
+        visible_tasks = st.session_state.owner.filter_tasks(
+            completed=True, pet_name=st.session_state.pet.name
+        )
+    else:
+        visible_tasks = st.session_state.owner.filter_tasks(
+            pet_name=st.session_state.pet.name
+        )                                               # PetOwner.filter_tasks()
+
+    if visible_tasks:
+        st.table([
+            {
+                "Task": t.type_of_task,
+                "Pet": t.pet_name,
+                "Time": t.time,
+                "Duration (min)": t.duration,
+                "Priority": t.priority_level,
+                "Status": "✅ done" if t.completed else "⏳ pending",
+            }
+            for t in visible_tasks
+        ])
+    else:
+        st.info(f"No {status_filter.lower()} tasks.")
 else:
     st.info("No tasks yet. Add one above.")
 
@@ -82,6 +100,8 @@ st.divider()
 # --- Generate Schedule ---
 st.subheader("Build Schedule")
 
+sort_by_time = st.checkbox("Sort by time instead of priority")
+
 if st.button("Generate Schedule"):
     owner = st.session_state.owner
     if not owner.get_all_tasks():
@@ -89,15 +109,39 @@ if st.button("Generate Schedule"):
     else:
         schedule = DailySchedule(date="2026-07-01", owner=owner)
         schedule.generate_schedule()                  # DailySchedule.generate_schedule()
+        if sort_by_time:
+            schedule.sort_by_time()                    # DailySchedule.sort_by_time()
 
         st.success("Schedule generated!")
 
+        # --- Conflicts surfaced first so the owner sees them before the plan ---
+        conflicts = schedule.find_conflicts()          # DailySchedule.find_conflicts()
+        if conflicts:
+            st.markdown("#### ⚠️ Conflicts")
+            for time_str, tasks in sorted(conflicts.items()):
+                pet_names = {t.pet_name for t in tasks}
+                details = ", ".join(f"{t.type_of_task} ({t.pet_name})" for t in tasks)
+                if len(pet_names) == 1:
+                    # Same pet double-booked: literally impossible to do both.
+                    st.error(f"**{time_str}** — {details} can't happen at once for {tasks[0].pet_name}.")
+                else:
+                    # Different pets, same time: tight but possibly workable for the owner.
+                    st.warning(f"**{time_str}** — {details} are scheduled at the same time.")
+        else:
+            st.success("No scheduling conflicts detected.")
+
         st.markdown("#### Today's Schedule")
-        for task in schedule.scheduled_tasks:
-            st.markdown(
-                f"- **{task.time}** — {task.type_of_task} ({task.pet_name}) "
-                f"| {task.duration} min | Priority: `{task.priority_level}`"
-            )
+        st.table([
+            {
+                "Time": task.time if task.time else "??:??",
+                "Task": task.type_of_task,
+                "Pet": task.pet_name,
+                "Duration (min)": task.duration,
+                "Priority": task.priority_level,
+                "Status": "✅ done" if task.completed else "⏳ pending",
+            }
+            for task in schedule.scheduled_tasks
+        ])
 
         st.markdown("#### Reasoning")
         st.info(schedule.reasoning)

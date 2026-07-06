@@ -60,9 +60,9 @@ Here are some changes I made:
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
-My conflict checker only catches tasks that start at the exact same time (like two tasks both set to "09:00"). It does not check if tasks overlap when their durations are different. For example, a 30-minute walk starting at 07:00 actually runs until 07:30, so it really overlaps with a task starting at 07:15 — but my scheduler would not flag that as a conflict since the start times are not identical.
+My conflict checker only catches tasks that start at the exact same time (like two tasks both set to "09:00"). It does not check if tasks overlap when their durations are different. For example, a 30-minute walk starting at 07:00 actually runs until 07:30, so it really overlaps with a task starting at 07:15, but my scheduler would not flag that as a conflict since the start times are not identical.
 
-I think this is a reasonable tradeoff for now because comparing exact times is much simpler to write and understand than comparing time ranges (which would need converting times to actual start/end minutes and checking if those ranges cross each other). Since most of the tasks in this app are short, simple daily pet-care tasks, exact-match conflicts already catch the most obvious scheduling mistakes. If I wanted to catch overlapping durations too, I would need to store a real end time (start time + duration) for each task and compare ranges instead of single points in time.
+I think this is a reasonable tradeoff for now because comparing exact times is much simpler to write and understand than comparing time ranges (which would need converting times to actual start/end minutes and checking if those ranges cross each other). 
 
 ---
 
@@ -70,13 +70,11 @@ I think this is a reasonable tradeoff for now because comparing exact times is m
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+- I used AI as a tool to ask questions, review my code and explain parts of the code when I didn't understand the logic. It also helped me with coming up with different edge cases.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+One moment I didn't just accept what the AI did was when it tried to start my Streamlit app for me by running a command in the background. I said no, because I wanted to run it myself in my own terminal. When I ran it myself, I got a "No module named streamlit" error. The AI helped me figure out that I had the wrong virtual environment activated (the outer project venv instead of the one inside my pawpal folder that actually has streamlit installed), but I verified this myself by checking the folder paths and picking the correct venv to activate.
 
 ---
 
@@ -84,13 +82,16 @@ I think this is a reasonable tradeoff for now because comparing exact times is m
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+I tested:
+
+1. whether my scheduler sorts tasks correctly
+2. whether marking a recurring task complete creates the next occurrence with the correct due date
+3. whether my conflict checker correctly flags tasks at the same time.
+
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+I feel fairly confident my scheduler works correctly for the cases I tested, since I have 24 passing tests covering sorting, recurrence, and conflicts. If I had more time, I would test overlapping tasks with different durations.
 
 ---
 
@@ -98,12 +99,14 @@ I think this is a reasonable tradeoff for now because comparing exact times is m
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+- I was happy with how the conflict detection worked.
+
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+I would make the conflict checker smarter, so it catches tasks that overlap in time, not just ones that start at the exact same minute.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+I learned how system design works and its implementation.
+

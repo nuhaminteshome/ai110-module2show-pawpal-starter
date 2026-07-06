@@ -111,12 +111,107 @@ tests\test_pawpal.py ........................                            [100%]
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+### Main UI features
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+The Streamlit app (`app.py`) lets a user:
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+- Enter owner and pet info (name, pet name, species) and save it
+- Add tasks to the active pet (title, duration, priority, preferred time)
+- View current tasks in a table, filterable by **All / Pending / Completed**
+- Generate a daily schedule, optionally sorted by time instead of priority
+- See any scheduling conflicts flagged before the schedule itself, along with the plain-language reasoning behind the task order
+
+### Example workflow
+
+1. Save an owner ("Alex") and a pet ("Luna the Dog").
+2. Add a few tasks for Luna — e.g. "Morning Walk" (high priority, 07:00) and "Feeding" (high priority, 08:00).
+3. Check the tasks table to confirm they were added, then switch the filter to "Pending" to confirm both show up.
+4. Click "Generate Schedule" to see today's plan ordered by priority, with the reasoning explained underneath.
+5. Toggle "Sort by time" to re-order the same schedule chronologically instead.
+6. If two tasks land on the same time slot, the conflict is called out above the schedule — as an error if it's the same pet double-booked, or a warning if it's two different pets.
+
+### Key Scheduler behaviors shown
+
+- **Sorting** — `generate_schedule()` orders tasks by priority (high → medium → low); `sort_by_time()` re-orders the same list chronologically.
+- **Conflict warnings** — `find_conflicts()` / `get_conflict_warnings()` catch tasks sharing a time slot and label each as a same-pet or different-pets clash.
+- **Recurrence** — `mark_complete()` on a daily/weekly task automatically creates the next occurrence with the correct due date.
+
+### Sample CLI output (`python main.py`)
+
+```
+Welcome to PawPal+, Alex!
+
+========== Schedule sorted by PRIORITY ==========
+
+=== Daily Schedule: 2026-07-01 ===
+  08:00 — Feeding (10 min) [priority: high] [done]
+  07:00 — Morning Walk (30 min) [priority: high] [pending]
+  08:00 — Feeding (10 min) [priority: high] [pending]
+  09:00 — Medication (5 min) [priority: high] [pending]
+  07:00 — Training Session (15 min) [priority: medium] [pending]
+  15:00 — Playtime (20 min) [priority: medium] [pending]
+  09:00 — Vet Check-in Call (10 min) [priority: low] [pending]
+  18:00 — Grooming (15 min) [priority: low] [done]
+  18:00 — Grooming (15 min) [priority: low] [pending]
+
+=== Schedule Reasoning ===
+Tasks ordered by priority for 2026-07-01:
+  - [HIGH] Feeding for Luna (10 min)
+  - [HIGH] Morning Walk for Luna (30 min)
+  - [HIGH] Feeding for Luna (10 min)
+  - [HIGH] Medication for Mochi (5 min)
+  - [MEDIUM] Training Session for Luna (15 min)
+  - [MEDIUM] Playtime for Mochi (20 min)
+  - [LOW] Vet Check-in Call for Luna (10 min)
+  - [LOW] Grooming for Mochi (15 min)
+  - [LOW] Grooming for Mochi (15 min)
+
+========== Schedule sorted by TIME ==========
+
+=== Daily Schedule: 2026-07-01 ===
+  07:00 — Morning Walk (30 min) [priority: high] [pending]
+  07:00 — Training Session (15 min) [priority: medium] [pending]
+  08:00 — Feeding (10 min) [priority: high] [done]
+  08:00 — Feeding (10 min) [priority: high] [pending]
+  09:00 — Medication (5 min) [priority: high] [pending]
+  09:00 — Vet Check-in Call (10 min) [priority: low] [pending]
+  15:00 — Playtime (20 min) [priority: medium] [pending]
+  18:00 — Grooming (15 min) [priority: low] [done]
+  18:00 — Grooming (15 min) [priority: low] [pending]
+
+=== Scheduling Conflicts ===
+  Warning: scheduling conflict at 07:00 [same pet]: Morning Walk (Luna), Training Session (Luna)
+  Warning: scheduling conflict at 08:00 [same pet]: Feeding (Luna), Feeding (Luna)
+  Warning: scheduling conflict at 09:00 [different pets]: Medication (Mochi), Vet Check-in Call (Luna)
+  Warning: scheduling conflict at 18:00 [same pet]: Grooming (Mochi), Grooming (Mochi)
+
+========== Pending Tasks ==========
+  07:00 — Morning Walk for Luna
+  07:00 — Training Session for Luna
+  09:00 — Vet Check-in Call for Luna
+  08:00 — Feeding for Luna
+  09:00 — Medication for Mochi
+  15:00 — Playtime for Mochi
+  18:00 — Grooming for Mochi
+
+========== Completed Tasks ==========
+  08:00 — Feeding for Luna
+  18:00 — Grooming for Mochi
+
+========== Mochi's Tasks ==========
+  18:00 — Grooming (low)
+  09:00 — Medication (high)
+  15:00 — Playtime (medium)
+  18:00 — Grooming (low)
+
+========== Due Dates (verifying timedelta rollover) ==========
+  Feeding for Luna [daily] due 2026-07-01 [done]
+  Morning Walk for Luna [daily] due 2026-07-01 [pending]
+  Training Session for Luna [daily] due 2026-07-01 [pending]
+  Vet Check-in Call for Luna [daily] due 2026-07-01 [pending]
+  Feeding for Luna [daily] due 2026-07-02 [pending]
+  Grooming for Mochi [weekly] due 2026-07-01 [done]
+  Medication for Mochi [daily] due 2026-07-01 [pending]
+  Playtime for Mochi [daily] due 2026-07-01 [pending]
+  Grooming for Mochi [weekly] due 2026-07-08 [pending]
+```
